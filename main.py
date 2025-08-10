@@ -37,13 +37,20 @@ async def main():
         raise
 
 if __name__ == "__main__":
+    import asyncio
+    import nest_asyncio
+
+    async def main_wrapper():
+        bot = TelegramBot(Config())
+        await bot.start()
+
     try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        asyncio.run(main_wrapper())
     except RuntimeError as e:
-        if "event loop is closed" in str(e):
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(main())
+        if "asyncio.run() cannot be called from a running event loop" in str(e):
+            nest_asyncio.apply()
+            loop = asyncio.get_event_loop()
+            loop.create_task(main_wrapper())
+            loop.run_forever()
         else:
             raise
