@@ -144,4 +144,7 @@ class TelegramBot:
     async def start(self):
         """Start the bot."""
         logger.info("Bot is starting...")
-        await self.application.run_polling()
+        await self.application.initialize()
+await self.application.start()
+await self.application.updater.start_polling()
+await self.application.updater.idle()
